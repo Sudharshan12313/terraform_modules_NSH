@@ -1,4 +1,4 @@
-output "ec2_instance_id" {
+/*output "ec2_instance_id" {
   description = "The Instance Id of the Instance Provisioned"
   value = module.ec2_instance.aws_instance.web_server_new.instance_id
 }
@@ -26,4 +26,4 @@ output "rds_instance_endpoint" {
 output "rds_instance_arn" {
   description = "The ARN of the RDS instance"
   value       = module.rds_instance.aws_db_instance.app_db.arn
-}
+}*/
