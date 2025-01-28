@@ -1,0 +1,1 @@
+{"Modules":[{"Key":"","Source":"","Dir":"."},{"Key":"ec2_instance","Source":"../../Modules/EC2_Module","Dir":"../../Modules/EC2_Module"},{"Key":"rds_instance","Source":"../../Modules/RDS_Module","Dir":"../../Modules/RDS_Module"},{"Key":"s3_bucket","Source":"../../Modules/S3_Module","Dir":"../../Modules/S3_Module"}]}

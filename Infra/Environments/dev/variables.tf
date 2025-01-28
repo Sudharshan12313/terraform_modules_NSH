@@ -34,11 +34,6 @@ variable "enable_versioning" {
   default     = true
 }
 
-variable "environment" {
-  description = "The environment tag for the S3 bucket"
-  type        = string
-}
-
 # RDS Variables
 
 variable "db_identifier" {
@@ -82,10 +77,5 @@ variable "skip_final_snapshot" {
   description = "Whether to skip the final snapshot when the RDS instance is deleted"
   type        = bool
   default     = true
-}
-
-variable "environment" {
-  description = "The environment tag for the RDS instance"
-  type        = string
 }
 
