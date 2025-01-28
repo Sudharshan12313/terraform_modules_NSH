@@ -71,6 +71,7 @@ jobs:
       # Step: Terraform Init
       - name: Terraform Init
         run: | 
+          cd Infra/Environments/${{ github.event.inputs.environment || 'dev' }}
           terraform init
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
@@ -79,6 +80,7 @@ jobs:
       # Step: Run Terraform Format (ensure all Terraform files are formatted)
       - name: Terraform Format
         run: |
+          cd Infra/Environments/${{ github.event.inputs.environment || 'dev' }}
           terraform fmt -check -diff  # -check checks if formatting is correct, -diff shows the differences
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
@@ -87,6 +89,7 @@ jobs:
       # Step: Run Terraform Validate (validate configuration files)
       - name: Terraform Validate
         run: |
+          cd Infra/Environments/${{ github.event.inputs.environment || 'dev' }}
           terraform validate
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
@@ -95,6 +98,7 @@ jobs:
       # Step: Terraform Workspace Select
       - name: Terraform Workspace Select
         run: |
+          cd Infra/Environments/${{ github.event.inputs.environment || 'dev' }}
           terraform workspace select ${{ github.event.inputs.environment || 'dev' }} || terraform workspace new ${{ github.event.inputs.environment || 'dev' }}
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
