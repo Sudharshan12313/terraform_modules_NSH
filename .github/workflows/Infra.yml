@@ -35,10 +35,16 @@ jobs:
           terraform_version: 1.5.5
 
       # Step: Set up TFLint
+      # Step: Install TFLint
       - name: Install TFLint
         run: |
-          curl -s https://raw.githubusercontent.com/terraform-linters/tflint/master/install_linux.sh | bash
-          sudo mv tflint /usr/local/bin/
+         curl -LO https://github.com/terraform-linters/tflint/releases/download/v0.55.0/tflint-linux-amd64.zip
+
+         unzip tflint-linux-amd64.zip
+         sudo mv tflint /usr/local/bin/
+         rm tflint-linux-amd64.zip
+         tflint --version
+
 
       # Step: Run TFLint to check for issues in the Terraform code
       - name: Run TFLint
