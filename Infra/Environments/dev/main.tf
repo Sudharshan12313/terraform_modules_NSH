@@ -13,7 +13,7 @@ module "s3_bucket" {
 }
 
 module "rds_instance" {
-  source              = "../Modules/RDS_Module/"
+  source              = "../../Modules/RDS_Module/"
   db_identifier       = var.db_identifier
   db_allocated_storage = var.db_allocated_storage
   db_instance_class   = var.db_instance_class
