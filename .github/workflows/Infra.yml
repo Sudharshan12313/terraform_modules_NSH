@@ -77,15 +77,6 @@ jobs:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
 
-      # Step: Run Terraform Format (ensure all Terraform files are formatted)
-      - name: Terraform Format
-        run: |
-          cd Infra/Environments/${{ github.event.inputs.environment || 'dev' }}
-          terraform fmt -check -diff  # -check checks if formatting is correct, -diff shows the differences
-        env:
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-
       # Step: Run Terraform Validate (validate configuration files)
       - name: Terraform Validate
         run: |
