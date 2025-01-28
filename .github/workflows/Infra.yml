@@ -1,0 +1,143 @@
+name: Infra Provisioning through Terraform
+
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: "Environment to deploy (e.g., dev, staging, prod)"
+        required: true
+        default: "dev"
+        type: choice
+        options:
+        - dev
+        - staging
+        - prod
+
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  terraform:
+    name: Terraform
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      # Step: Set up Terraform
+      - name: Set up Terraform
+        uses: hashicorp/setup-terraform@v2
+        with:
+          terraform_version: 1.5.5
+
+      # Step: Set up TFLint
+      - name: Set up TFLint
+        uses: wata727/tflint-action@v1
+        with:
+          terraform_version: 1.5.5  # Match the Terraform version
+
+      # Step: Run TFLint to check for issues in the Terraform code
+      - name: Run TFLint
+        run: |
+          tflint --config .tflint.hcl --enable-rule=all  # Optional: You can add custom rules
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+
+      # Step: Set up Checkov
+      - name: Set up Checkov
+        uses: checkov/checkov-action@v1
+        with:
+          version: '2.0.0'  # You can specify the version here
+
+      # Step: Run Checkov to scan Terraform code for security and compliance issues
+      - name: Run Checkov
+        run: |
+          checkov -d . --check-type=terraform --quiet  # You can adjust options based on your needs
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+
+      # Step: Terraform Init
+      - name: Terraform Init
+        run: |
+          cd /Infra/Environments/${{ github.event.inputs.environment || 'dev' }} 
+          terraform init
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+
+      # Step: Run Terraform Format (ensure all Terraform files are formatted)
+      - name: Terraform Format
+        run: |
+          cd /Infra/Environments/${{ github.event.inputs.environment || 'dev' }}
+          terraform fmt -check -diff  # -check checks if formatting is correct, -diff shows the differences
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+
+      # Step: Run Terraform Validate (validate configuration files)
+      - name: Terraform Validate
+        run: |
+          cd /Infra/Environments/${{ github.event.inputs.environment || 'dev' }} 
+          terraform validate
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+
+      # Step: Terraform Workspace Select
+      - name: Terraform Workspace Select
+        run: |
+          cd /Infra/Environments/${{ github.event.inputs.environment || 'dev' }} 
+          terraform workspace select ${{ github.event.inputs.environment || 'dev' }} || terraform workspace new ${{ github.event.inputs.environment || 'dev' }}
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}  
+
+      # Step: Terraform Plan
+      - name: Terraform Plan
+        run: |
+          cd /Infra/Environments/${{ github.event.inputs.environment || 'dev' }} 
+          terraform plan -out=tfplan
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+
+      # Step: Checkout Repository for PR
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+          ref: ${{ github.event.pull_request.head.ref || github.ref }} 
+          token: ${{ secrets.PAT_TOKEN }}
+
+      # Step: Configure Git for committing generated README.md
+      - name: Configure Git
+        run: |
+          git config --global user.name 'github-actions[bot]'
+          git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+
+      # Step: Generate Markdown with Terraform Docs
+      - name: Generate Markdown with Terraform Docs
+        if: ${{ github.event_name == 'pull_request' }}
+        uses: terraform-docs/gh-actions@v1.3.0
+        with:
+          working-dir: .
+          output-file: README.md
+          output-method: inject
+          git-push: true
+          config-file: .terraform-docs.yml
+
+      # # Step: Apply Terraform if PR is merged
+      # - name: Apply Terraform on Merge the PR
+      #   if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
+      #   run: |
+      #     terraform init
+      #     terraform apply -auto-approve
+      #   env:
+      #     AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      #     AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
