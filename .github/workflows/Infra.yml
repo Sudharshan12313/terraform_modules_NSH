@@ -103,7 +103,7 @@ jobs:
       # Step: Terraform Plan
       - name: Terraform Plan
         run: |
-          cd /Infra/Environments/${{ github.event.inputs.environment || 'dev' }} 
+          cd Infra/Environments/${{ github.event.inputs.environment || 'dev' }} 
           terraform plan -out=tfplan
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
