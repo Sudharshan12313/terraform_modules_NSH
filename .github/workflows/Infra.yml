@@ -35,10 +35,10 @@ jobs:
           terraform_version: 1.5.5
 
       # Step: Set up TFLint
-      - name: Set up TFLint
-        uses: wata727/tflint-action@v1
-        with:
-          terraform_version: 1.5.5  # Match the Terraform version
+      - name: Install TFLint
+        run: |
+          curl -s https://raw.githubusercontent.com/terraform-linters/tflint/master/install_linux.sh | bash
+          sudo mv tflint /usr/local/bin/
 
       # Step: Run TFLint to check for issues in the Terraform code
       - name: Run TFLint
@@ -49,10 +49,10 @@ jobs:
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
 
       # Step: Set up Checkov
-      - name: Set up Checkov
-        uses: checkov/checkov-action@v1
-        with:
-          version: '2.0.0'  # You can specify the version here
+      - name: Install Checkov
+        run: |
+          curl -s https://raw.githubusercontent.com/bridgecrewio/checkov/master/scripts/install.sh | bash
+          sudo mv checkov /usr/local/bin/
 
       # Step: Run Checkov to scan Terraform code for security and compliance issues
       - name: Run Checkov
