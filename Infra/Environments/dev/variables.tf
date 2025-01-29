@@ -1,19 +1,21 @@
 # EC2 Variables
 variable "ami_id" {
-	description = "AMI Id"
-	type = string
-	default = "ami-05d38da78ce859165"
+   description = "AMI Id"
+   type = string
+   default = "ami-05d38da78ce859165"
 }
 
 
 variable "environment" {
   description = "Environment for the infrastructure"
   default     = "dev"
+  type        = string
 }
 
 variable "instance_type" {
   description = "EC2 instance type"
   default     = "t3.micro"
+  type        = string
 }
 
 # S3 Variables
