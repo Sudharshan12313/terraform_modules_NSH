@@ -144,7 +144,7 @@ jobs:
 
       # Step: Generate Markdown with Terraform Docs
       - name: Generate Markdown with Terraform Docs
-       # if: ${{ github.event_name == 'pull_request' }}
+        if: ${{ github.event_name == 'pull_request' }}
         uses: terraform-docs/gh-actions@v1.3.0
         with:
           working-dir: Infra/Environments/${{ github.event.inputs.environment || 'dev' }}
@@ -153,12 +153,13 @@ jobs:
           git-push: true
           config-file: .terraform-docs.yml
 
-      # # Step: Apply Terraform if PR is merged
-      # - name: Apply Terraform on Merge the PR
-      #   if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
-      #   run: |
-      #     terraform init
-      #     terraform apply -auto-approve
-      #   env:
-      #     AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-      #     AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      # Step: Apply Terraform if PR is merged
+      - name: Apply Terraform on Merge the PR
+        if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
+        run: |
+          cd Infra/Environments/${{ github.event.inputs.environment || 'dev' }}
+          terraform init
+          terraform apply -auto-approve -var-file="${{ github.event.inputs.environment || 'dev' }}-var.tfvars"
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
