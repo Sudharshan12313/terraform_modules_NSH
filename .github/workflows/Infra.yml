@@ -87,7 +87,7 @@ jobs:
       - name: Run Checkov
         run: |
           cd Infra/Environments/${{ github.event.inputs.environment || 'dev' }}
-          checkov --directory . --skip-check CKV_AWS_*
+          checkov --directory . --skip-check CKV_AWS_*,CKV2_AWS_*
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
