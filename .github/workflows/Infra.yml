@@ -19,6 +19,10 @@ on:
   pull_request:
     branches:
       - main
+      
+permissions:
+  contents: read
+  pull-requests: write      
 
 jobs:
   terraform:
@@ -152,6 +156,16 @@ jobs:
           output-method: inject
           git-push: true
           config-file: .terraform-docs.yml
+
+       # **New Step: Add README.md to PR Comment using Sticky Comment**
+      - name: Post README.md as PR Comment
+        if: ${{ github.event_name == 'pull_request' }}
+        uses: marocchino/sticky-pull-request-comment@v2.9.0
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          header: "Terraform Documentation 📖"
+          path: "Infra/Environments/${{ github.event.inputs.environment || 'dev' }}/README.md"
+    
 
       # Step: Apply Terraform if PR is merged
       - name: Apply Terraform on Merge the PR
