@@ -147,7 +147,7 @@ jobs:
        # if: ${{ github.event_name == 'pull_request' }}
         uses: terraform-docs/gh-actions@v1.3.0
         with:
-          working-dir: cd Infra/Environments/${{ github.event.inputs.environment || 'dev' }} 
+          working-dir: Infra/Environments/"${{ github.event.inputs.environment || 'dev' }}"
           output-file: README.md
           output-method: inject
           git-push: true
