@@ -77,28 +77,21 @@ jobs:
          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
 
 
-      # # Step: Run TFLint to check for issues in the Terraform code
-      # - name: Run TFLint
-      #   run: |
-      #     tflint --config .tflint.hcl --enable-rule=all  # Optional: You can add custom rules
-      #   env:
-      #     AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-      #     AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      # Step: Install Checkov
+      - name: Install Checkov
+        run: |
+          pip install checkov
+          checkov --version
 
-      # # Step: Set up Checkov
-      # - name: Install Checkov
-      #   run: |
-      #     curl -s https://raw.githubusercontent.com/bridgecrewio/checkov/master/scripts/install.sh | bash
-      #     sudo mv checkov /usr/local/bin/
-
-      # # Step: Run Checkov to scan Terraform code for security and compliance issues
-      # - name: Run Checkov
-      #   run: |
-      #     checkov -d . --check-type=terraform --quiet  # You can adjust options based on your needs
-      #   env:
-      #     AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-      #     AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-     #cd /Infra/Environments/${{ github.event.inputs.environment || 'dev' }}
+      # Step: Run Checkov Security Scan
+      - name: Run Checkov
+        run: |
+          cd Infra/Environments/${{ github.event.inputs.environment || 'dev' }}
+          checkov -d . --quiet --framework terraform
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          
       # Step: Terraform Init
       - name: Terraform Init
         run: | 
