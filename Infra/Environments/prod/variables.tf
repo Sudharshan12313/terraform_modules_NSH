@@ -1,19 +1,21 @@
 # EC2 Variables
 variable "ami_id" {
-	description = "AMI Id"
-	type = string
-	default = "ami-05d38da78ce859165"
+   description = "AMI Id"
+   type = string
+   default = "ami-05d38da78ce859165"
 }
 
 
 variable "environment" {
   description = "Environment for the infrastructure"
   default     = "dev"
+  type        = string
 }
 
 variable "instance_type" {
   description = "EC2 instance type"
   default     = "t3.micro"
+  type        = string
 }
 
 # S3 Variables
@@ -32,11 +34,6 @@ variable "enable_versioning" {
   description = "Enable versioning for the S3 bucket"
   type        = bool
   default     = true
-}
-
-variable "environment" {
-  description = "The environment tag for the S3 bucket"
-  type        = string
 }
 
 # RDS Variables
@@ -83,9 +80,3 @@ variable "skip_final_snapshot" {
   type        = bool
   default     = true
 }
-
-variable "environment" {
-  description = "The environment tag for the RDS instance"
-  type        = string
-}
-
