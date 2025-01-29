@@ -10,6 +10,7 @@ module "s3_bucket" {
   bucket_name  = var.bucket_name
   acl       = var.acl
   environment  = var.environment
+  enable_versioning = var.enable_versioning
 }
 
 module "rds_instance" {
@@ -21,4 +22,6 @@ module "rds_instance" {
   db_username         = var.db_username
   db_password         = var.db_password
   environment         = var.environment
+  skip_final_snapshot = var. skip_final_snapshot
+
 }
